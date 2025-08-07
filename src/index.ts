@@ -13,6 +13,22 @@
 
 export default {
 	async fetch(request, env, ctx): Promise<Response> {
-		return new Response('Hello World!');
+		const country = request?.cf?.country || 'us'; // Get country code from Cloudflare's header
+		const url = new URL(request.url);
+
+		// Create a custom cache key including the country
+		const cacheKey = new Request(`${url.origin}${url.pathname}?country=${country}`);
+
+		let response = await caches.default.match(cacheKey);
+
+		if (!response) {
+			// If not in cache, fetch from origin
+			response = new Response(`Hello World! ${country} ${new Date().toISOString()}`);
+
+			// Put the response into the cache with the custom key
+			await caches.default.put(cacheKey, response.clone());
+		}
+
+		return response;
 	},
 } satisfies ExportedHandler<Env>;
