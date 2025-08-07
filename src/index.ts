@@ -14,8 +14,18 @@ import indexHtml from './index.html';
 
 export default {
 	async fetch(request, env, ctx): Promise<Response> {
-		const country = request?.cf?.country || 'us'; // Get country code from Cloudflare's header
 		const url = new URL(request.url);
+		const country = request?.cf?.country || 'us'; // Get country code from Cloudflare's header
+
+		if ((url.pathname = '/purge')) {
+			const cacheKey = new Request(`${url.origin}/?country=${country}`);
+			await caches.default.delete(cacheKey);
+			return new Response('purged', {
+				headers: {
+					'Content-Type': 'text',
+				},
+			});
+		}
 
 		// Create a custom cache key including the country
 		const cacheKey = new Request(`${url.origin}${url.pathname}?country=${country}`);
@@ -31,6 +41,8 @@ export default {
 			response = new Response(dynamicHtml, {
 				headers: {
 					'Content-Type': 'text/html',
+					'cache-control': 'max-s-age=3600',
+					'Cache-Tag': 'index',
 					time: new Date().toISOString(),
 				},
 			});
