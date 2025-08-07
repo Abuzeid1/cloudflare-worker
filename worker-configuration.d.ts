@@ -7,6 +7,12 @@ declare namespace Cloudflare {
 }
 interface Env extends Cloudflare.Env {}
 
+// Add type declaration for HTML module imports
+declare module "*.html" {
+	const content: string;
+	export default content;
+}
+
 // Begin runtime types
 /*! *****************************************************************************
 Copyright (c) Cloudflare. All rights reserved.

@@ -10,6 +10,7 @@
  *
  * Learn more at https://developers.cloudflare.com/workers/
  */
+import indexHtml from './index.html';
 
 export default {
 	async fetch(request, env, ctx): Promise<Response> {
@@ -23,7 +24,16 @@ export default {
 
 		if (!response) {
 			// If not in cache, fetch from origin
-			response = new Response(`Hello World! ${country} ${new Date().toISOString()}`);
+			const dynamicHtml = indexHtml.replace(
+				'<h1>Hello World</h1>',
+				`<h1>Hello World from ${country.toUpperCase()} - ${new Date().toISOString()}</h1>`
+			);
+			response = new Response(dynamicHtml, {
+				headers: {
+					'Content-Type': 'text/html',
+					time: new Date().toISOString(),
+				},
+			});
 
 			// Put the response into the cache with the custom key
 			await caches.default.put(cacheKey, response.clone());
