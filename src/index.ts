@@ -17,7 +17,7 @@ export default {
 		const url = new URL(request.url);
 		const country = request?.cf?.country || 'us'; // Get country code from Cloudflare's header
 
-		if ((url.pathname = '/purge')) {
+		if (url.pathname == '/purge') {
 			const cacheKey = new Request(`${url.origin}/?country=${country}`);
 			await caches.default.delete(cacheKey);
 			return new Response('purged', {
