@@ -19,14 +19,14 @@ export default {
 
 		if (url.pathname == '/purge') {
 			const cacheKey = new Request(`${url.origin}/?country=${country}`);
-			await caches.default.delete(cacheKey);
+			ctx.waitUntil(caches.default.delete(cacheKey));
+
 			return new Response('purged', {
 				headers: {
 					'Content-Type': 'text',
 				},
 			});
 		}
-
 		// Create a custom cache key including the country
 		const cacheKey = new Request(`${url.origin}${url.pathname}?country=${country}`);
 
@@ -41,14 +41,14 @@ export default {
 			response = new Response(dynamicHtml, {
 				headers: {
 					'Content-Type': 'text/html',
-					'cache-control': 'max-s-age=3600',
+					'cache-control': 'public, durable, max-age=60,max-s-age=3600',
 					'Cache-Tag': 'index',
 					time: new Date().toISOString(),
 				},
 			});
 
 			// Put the response into the cache with the custom key
-			await caches.default.put(cacheKey, response.clone());
+			ctx.waitUntil(caches.default.put(cacheKey, response.clone()));
 		}
 
 		return response;
