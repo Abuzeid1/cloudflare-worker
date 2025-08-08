@@ -34,18 +34,10 @@ export default {
 
 		if (!response) {
 			// If not in cache, fetch from origin
-			const dynamicHtml = indexHtml.replace(
-				'<h1>Hello World</h1>',
-				`<h1>Hello World from ${country.toUpperCase()} - ${new Date().toISOString()}</h1>`
-			);
-			response = new Response(dynamicHtml, {
-				headers: {
-					'Content-Type': 'text/html',
-					'cache-control': 'public, durable, max-age=60,max-s-age=3600',
-					'Cache-Tag': 'index',
-					time: new Date().toISOString(),
-				},
-			});
+			const yaaqen = await fetch('https://yaaqen.com/');
+			yaaqen.headers.set('Cache-Control', 'public, durable, max-age=60,max-s-age=3600, stale-while-revalidate=3600');
+
+			response = yaaqen;
 
 			// Put the response into the cache with the custom key
 			ctx.waitUntil(caches.default.put(cacheKey, response.clone()));
