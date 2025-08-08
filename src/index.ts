@@ -35,9 +35,13 @@ export default {
 		if (!response) {
 			// If not in cache, fetch from origin
 			const yaaqen = await fetch('https://yaaqen.com/');
-			yaaqen.headers.set('Cache-Control', 'public, durable, max-age=60,max-s-age=3600, stale-while-revalidate=3600');
 
-			response = yaaqen;
+			response = new Response(yaaqen.body, {
+				headers: {
+					'Cache-Control': 'public, durable, max-age=60,max-s-age=3600, stale-while-revalidate=3600',
+					...yaaqen.headers,
+				},
+			});
 
 			// Put the response into the cache with the custom key
 			ctx.waitUntil(caches.default.put(cacheKey, response.clone()));
