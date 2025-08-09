@@ -38,7 +38,8 @@ export default {
 
 			response = new Response(yaaqen.body, {
 				headers: {
-					...yaaqen.headers,
+					...new Headers(yaaqen.headers),
+					'Content-Type': 'text/html; charset=UTF-8',
 					'Cache-Control': 'public, durable, max-age=60,s-maxage=3600, stale-while-revalidate=3600',
 				},
 			});
