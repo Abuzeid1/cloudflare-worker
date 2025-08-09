@@ -10,12 +10,12 @@
  *
  * Learn more at https://developers.cloudflare.com/workers/
  */
-import indexHtml from './index.html';
 
 export default {
 	async fetch(request, env, ctx): Promise<Response> {
 		const url = new URL(request.url);
-		const country = request?.cf?.country || 'us'; // Get country code from Cloudflare's header
+		// Get country code from Cloudflare's header
+		const country = request?.cf?.country || 'us';
 
 		if (url.pathname == '/purge') {
 			const cacheKey = new Request(`${url.origin}/?country=${country}`);
@@ -38,8 +38,8 @@ export default {
 
 			response = new Response(yaaqen.body, {
 				headers: {
-					'Cache-Control': 'public, durable, max-age=60,max-s-age=3600, stale-while-revalidate=3600',
 					...yaaqen.headers,
+					'Cache-Control': 'public, durable, max-age=60,s-maxage=3600, stale-while-revalidate=3600',
 				},
 			});
 
