@@ -7,7 +7,7 @@ export default {
 		const country = request?.cf?.country || 'us';
 
 		if (url.pathname == '/purge') {
-			const cacheKey = new Request(`${url.origin}/?country=${country}`);
+			const cacheKey = 'https://staging.theqalink.com/database/worker';
 			ctx.waitUntil(caches.default.delete(cacheKey));
 
 			return new Response('purged', {
@@ -17,26 +17,28 @@ export default {
 			});
 		}
 		// Create a custom cache key including the country
-		const cacheKey = new Request(`${url.origin}${url.pathname}?country=${country}`);
+		const cacheKey = 'https://staging.theqalink.com/database/worker';
 
 		let response = await caches.default.match(cacheKey);
 
 		if (!response) {
 			// If not in cache, fetch from origin
-			const yaaqen = await fetch('https://yaaqen.com/');
 
-			response = new Response(yaaqen.body, {
+			response = new Response(`hell on earth ${new Date().toString()}`, {
 				headers: {
-					...yaaqen.headers,
-					'Content-Type': 'text/html; charset=UTF-8',
+					'Content-Type': 'text/plain',
 					'Cache-Control': 'public, durable, max-age=60,s-maxage=3600, stale-while-revalidate=3600',
 				},
 			});
 
+			console.log('cache not found');
+
 			// Put the response into the cache with the custom key
-			ctx.waitUntil(caches.default.put(cacheKey, response.clone()));
+			ctx.waitUntil(caches.default.put(cacheKey, response));
+		} else {
+			console.log({ text: await response.text() });
 		}
 
-		return response;
+		return new Response('go To hell');
 	},
 } satisfies ExportedHandler<Env>;
