@@ -1,15 +1,4 @@
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `npm run dev` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `npm run deploy` to publish your worker
- *
- * Bind resources to your worker in `wrangler.jsonc`. After adding bindings, a type definition for the
- * `Env` object can be regenerated with `npm run cf-typegen`.
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
+import { waitUntil } from 'cloudflare:workers';
 
 export default {
 	async fetch(request, env, ctx): Promise<Response> {
@@ -38,7 +27,7 @@ export default {
 
 			response = new Response(yaaqen.body, {
 				headers: {
-					...new Headers(yaaqen.headers),
+					...yaaqen.headers,
 					'Content-Type': 'text/html; charset=UTF-8',
 					'Cache-Control': 'public, durable, max-age=60,s-maxage=3600, stale-while-revalidate=3600',
 				},
